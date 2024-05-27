@@ -6,34 +6,27 @@ interface Numeral {
   [key: number]: number | string;
 }
 
-interface TimeCorrection {
-  operator: string;
-  hours: number;
-  minutes: number;
-}
-
 
 @customElement('thy-clock')
 export class ThyClock extends LitElement {
   @property({ type: Number }) size = 250;
-  @property({ type: String, attribute: "dial-color" }) dialColor = '#000000';
-  @property({ type: String, attribute: "dial-background-color" }) dialBackgroundColor = '#FFFFFF';
-  @property({ type: String, attribute: "second-hand-color" }) secondHandColor = '#F3A829';
-  @property({ type: String, attribute: "minute-hand-color" }) minuteHandColor = '#222222';
-  @property({ type: String, attribute: "hour-hand-color" }) hourHandColor = '#222222';
-  @property({ type: String, attribute: "alarm-hand-color" }) alarmHandColor = '#FFFFFF';
-  @property({ type: String, attribute: "hour-hand-tip-color" }) alarmHandTipColor = '#026729';
-  @property({ type: Boolean, attribute: "hide-numerals" }) hideNumerals = false;
-  @property({ type: String, attribute: "numeral-font" }) numeralFont = 'arial';
-  @property({ type: String, attribute: "brand-font" }) brandFont = 'arial';
-  @property({ type: String, attribute: "brand-text" }) brandText?: string;
-  @property({ type: String, attribute: "brand-text2" }) brandText2?: string;
-  @property({ type: Boolean, attribute: "ticking-minutes" }) tickingMinutes = false;
-  @property({ type: Boolean, attribute: "sweeping-seconds" }) sweepingSeconds = false;
+  @property({ type: String, attribute: "dial-color", reflect: true }) dialColor = '#000000';
+  @property({ type: String, attribute: "dial-background-color", reflect: true }) dialBackgroundColor = '#FFFFFF';
+  @property({ type: String, attribute: "second-hand-color", reflect: true }) secondHandColor = '#F3A829';
+  @property({ type: String, attribute: "minute-hand-color", reflect: true }) minuteHandColor = '#222222';
+  @property({ type: String, attribute: "hour-hand-color", reflect: true }) hourHandColor = '#222222';
+  @property({ type: String, attribute: "alarm-hand-color", reflect: true }) alarmHandColor = '#FFFFFF';
+  @property({ type: String, attribute: "hour-hand-tip-color", reflect: true }) alarmHandTipColor = '#026729';
+  @property({ type: Boolean, attribute: "hide-numerals", reflect: true }) hideNumerals = false;
+  @property({ type: String, attribute: "numeral-font", reflect: true }) numeralFont = 'arial';
+  @property({ type: String, attribute: "brand-font", reflect: true }) brandFont = 'arial';
+  @property({ type: String, attribute: "brand-text", reflect: true }) brandText?: string;
+  @property({ type: String, attribute: "brand-text2", reflect: true }) brandText2?: string;
+  @property({ type: Boolean, attribute: "ticking-minutes", reflect: true }) tickingMinutes = false;
+  @property({ type: Boolean, attribute: "sweeping-seconds", reflect: true }) sweepingSeconds = false;
   @property({ type: String }) numerals = JSON.stringify([{ 1: 1 }, { 2: 2 }, { 3: 3 }, { 4: 4 }, { 5: 5 }, { 6: 6 }, { 7: 7 }, { 8: 8 }, { 9: 9 }, { 10: 10 }, { 11: 11 }, { 12: 12 }]);
-  @property({ type: String, attribute: "alarm-time" }) alarmTime?: string;
-  @property({ type: Number }) alarmCount = 1;
-
+  @property({ type: String, attribute: "alarm-time", reflect: true }) alarmTime?: string;
+  @property({ type: Number, attribute: "alarm-repeat", reflect: true }) alarmRepeat = 1;
   @property({ type: String, attribute: "time-offset-operator", reflect: true }) timeOffsetOperator = "+";
   @property({ type: Number, attribute: "time-offset-hours", reflect: true }) timeOffsetHours = 0;
   @property({ type: Number, attribute: "time-offset-minutes", reflect: true }) timeOffsetMinutes = 0;
@@ -330,7 +323,7 @@ export class ThyClock extends LitElement {
           this.alarmTriggered += 1;
         }
 
-        if (this.alarmTriggered <= this.alarmCount && this.alarmTriggered !== 0) {
+        if (this.alarmTriggered <= this.alarmRepeat && this.alarmTriggered !== 0) {
           this.dispatchEvent(new CustomEvent('onAlarm', { bubbles: true, composed: true, detail: { date: now } }));
         }
       }
