@@ -1,186 +1,343 @@
-import { LitElement, css, html } from 'lit'
-import { customElement, property, state } from 'lit/decorators.js'
+import { LitElement, html, css, PropertyValues } from 'lit';
+import { customElement, property } from "lit/decorators.js";
 
-const DEFAULT_SIZE = 200;
+
+interface Numeral {
+  [key: number]: number | string;
+}
+
+interface TimeCorrection {
+  operator: string;
+  hours: number;
+  minutes: number;
+}
+
 
 @customElement('thy-clock')
 export class ThyClock extends LitElement {
+  @property({ type: Number }) size = 250;
+  @property({ type: String, attribute: "dial-color" }) dialColor = '#000000';
+  @property({ type: String, attribute: "dial-background-color" }) dialBackgroundColor = '#FFFFFF';
+  @property({ type: String, attribute: "second-hand-color" }) secondHandColor = '#F3A829';
+  @property({ type: String, attribute: "minute-hand-color" }) minuteHandColor = '#222222';
+  @property({ type: String, attribute: "hour-hand-color" }) hourHandColor = '#222222';
+  @property({ type: String, attribute: "alarm-hand-color" }) alarmHandColor = '#FFFFFF';
+  @property({ type: String, attribute: "hour-hand-tip-color" }) alarmHandTipColor = '#026729';
+  @property({ type: Boolean, attribute: "hide-numerals" }) hideNumerals = false;
+  @property({ type: String, attribute: "numeral-font" }) numeralFont = 'arial';
+  @property({ type: String, attribute: "brand-font" }) brandFont = 'arial';
+  @property({ type: String, attribute: "brand-text" }) brandText?: string;
+  @property({ type: String, attribute: "brand-text2" }) brandText2?: string;
+  @property({ type: Boolean, attribute: "ticking-minutes" }) tickingMinutes = false;
+  @property({ type: Boolean, attribute: "sweeping-seconds" }) sweepingSeconds = false;
+  @property({ type: String }) numerals = JSON.stringify([{ 1: 1 }, { 2: 2 }, { 3: 3 }, { 4: 4 }, { 5: 5 }, { 6: 6 }, { 7: 7 }, { 8: 8 }, { 9: 9 }, { 10: 10 }, { 11: 11 }, { 12: 12 }]);
+  @property({ type: String, attribute: "alarm-time" }) alarmTime?: string;
+  @property({ type: Number }) alarmCount = 1;
 
-  @property({ type: Number })
-  size = DEFAULT_SIZE;
+  @property({ type: String, attribute: "time-offset-operator", reflect: true }) timeOffsetOperator = "+";
+  @property({ type: Number, attribute: "time-offset-hours", reflect: true }) timeOffsetHours = 0;
+  @property({ type: Number, attribute: "time-offset-minutes", reflect: true }) timeOffsetMinutes = 0;
 
-  @property({ type: String, attribute: 'dial-color' })
-  dialColor = '#333333';
+  // @property({ type: Function }) onAlarm?: () => void;
+  // @property({ type: Function }) offAlarm?: () => void;
+  // @property({ type: Function }) onEverySecond?: () => void;
 
-  @property({ type: String, attribute: 'dial-background-color' })
-  dialBackgroundColor = '#FFFFFF';
-
-  @property({ type: String, attribute: 'second-hand-color' })
-  secondHandColor = '#F3A829';
-
-  @property({ type: String, attribute: 'minute-hand-color' })
-  minuteHandColor = '#222222';
-
-  @property({ type: String, attribute: 'hour-hand-color' })
-  hourHandColor = '#222222';
-
-  @property({ type: Boolean, attribute: 'hide-numerals' })
-  hideNumerals = false;
-
-  @property({ type: String, attribute: 'numeral-font' })
-  numeralFont = 'Arial';
-
-  @property({ type: String, attribute: 'brand-font' })
-  brandFont = 'Arial';
-
-  @property({ type: String, attribute: 'brand-text' })
-  brandText = "";
-
-  @property({ type: String, attribute: 'brand-text2' })
-  brandText2 = "";
-
-  @property({ type: Array })
-  numerals = [
-    { 1: 1 },
-    { 2: 2 },
-    { 3: 3 },
-    { 4: 4 },
-    { 5: 5 },
-    { 6: 6 },
-    { 7: 7 },
-    { 8: 8 },
-    { 9: 9 },
-    { 10: 10 },
-    { 11: 11 },
-    { 12: 12 }
-  ];
-
-  private elCanvas: HTMLCanvasElement | null = null;
-
-  constructor() {
-    super();
-    this.updateComplete.then(() => {
-      this.init();
-    })
-  }
-
-  render() {
-    return html`
-      <div class="clockWrapper" style="width: ${this.size}px">
-      <div class="cnvsWrapper">
-        <canvas id="cnvs" class="cnvs" width="${this.size}" height="${this.size}"></canvas>
-      </div>
-      </div>
-      `;
-  }
-
-  private init() {
-    this.elCanvas = this.renderRoot.querySelector('#cnvs');
-    if (this.elCanvas) {
-      const ctx = this.elCanvas.getContext('2d');
-      if (ctx) {
-        ctx.translate(this.size / 2, this.size / 2);
-        this.drawDial(ctx);
-      }
-    }
-  }
-
-
-  private toRadians(deg: number) {
-    return (Math.PI / 180) * deg;
-  }
-
-  private drawDial(ctx: CanvasRenderingContext2D) {
-    if (ctx) {
-      const dialRadius = this.size / 2 - (this.size / 50);
-      const dialBackRadius = this.size / 2 - (this.size / 400);
-
-      let sx, sy, ex, ey;
-
-      ctx.beginPath();
-      ctx.arc(0, 0, dialBackRadius, 0, 360, false);
-      ctx.fillStyle = this.dialBackgroundColor;
-      ctx.fill();
-
-      for (let i = 1; i <= 60; i += 1) {
-        const ang = Math.PI / 30 * i;
-        const sang = Math.sin(ang);
-        const cang = Math.cos(ang);
-        //hour marker/numeral
-        if (i % 5 === 0) {
-          ctx.lineWidth = this.size / 50;
-          sx = sang * (dialRadius - dialRadius / 9);
-          sy = cang * -(dialRadius - dialRadius / 9);
-          ex = sang * dialRadius;
-          ey = cang * - dialRadius;
-          const nx = sang * (dialRadius - dialRadius / 4.2);
-          const ny = cang * -(dialRadius - dialRadius / 4.2);
-          const marker = i / 5;
-
-          ctx.textBaseline = 'middle';
-          const textSize = this.size / 13;
-          ctx.font = '100 ' + textSize + 'px ' + this.numeralFont;
-          ctx.beginPath();
-          ctx.fillStyle = this.dialColor;
-
-          if (!this.hideNumerals && this.numerals.length > 0) {
-            this.numerals.map(function (numeral: any) {
-              if (marker.toString() === Object.keys(numeral)[0]) {
-                const textWidth = ctx.measureText(numeral[marker]).width;
-                ctx.fillText(numeral[marker], nx - (textWidth / 2), ny);
-              }
-            });
-          }
-          //minute marker
-        } else {
-          ctx.lineWidth = this.size / 100, 10;
-          sx = sang * (dialRadius - dialRadius / 20);
-          sy = cang * -(dialRadius - dialRadius / 20);
-          ex = sang * dialRadius;
-          ey = cang * - dialRadius;
-        }
-
-        ctx.beginPath();
-        ctx.strokeStyle = this.dialColor;
-        ctx.lineCap = "round";
-        ctx.moveTo(sx, sy);
-        ctx.lineTo(ex, ey);
-        ctx.stroke();
-      }
-
-      if (this.brandText) {
-        ctx.font = `100 ${this.size / 28}px ${this.brandFont}`;
-        const brandtextWidth = ctx.measureText(this.brandText).width;
-        ctx.fillText(this.brandText, -(brandtextWidth / 2), (this.size / 6));
-      }
-
-      if (this.brandText2) {
-        ctx.textBaseline = 'middle';
-        ctx.font = `100 ${this.size / 44}px ${this.brandFont}`;
-        const brandtextWidth2 = ctx.measureText(this.brandText2).width;
-        ctx.fillText(this.brandText2, -(brandtextWidth2 / 2), (this.size / 5));
-      }
-    }
-  }
-
+  private canvas?: HTMLCanvasElement;
+  private ctx?: CanvasRenderingContext2D;
+  private radius = 0;
+  private alarmTriggered = 0;
 
   static styles = css`
     :host {
       display: block;
     }
-    .clockWrapper {
-      width: auto;
-      height: auto;
-      aspect-ratio: 1 / 1;
-    }
-    .cnvs {
+    canvas {
       display: block;
     }
-  `
-}
+  `;
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'thy-clock': ThyClock
+  firstUpdated() {
+    this.canvas = this.shadowRoot?.querySelector('canvas')!;
+    this.ctx = this.canvas.getContext('2d')!;
+    this.radius = this.size / 2;
+    this.ctx.translate(this.radius, this.radius);
+    this.startClock();
+
+  }
+
+  updated(changedProperties: PropertyValues) {
+    if (changedProperties.has('size')) {
+      this.canvas!.width = this.size;
+      this.canvas!.height = this.size;
+      this.radius = this.size / 2;
+      this.ctx?.translate(this.radius, this.radius);
+    }
+  }
+
+  render() {
+    this.numerals = this.numerals ? JSON.parse(this.numerals) : [];
+    return html`<canvas width="${this.size}" height="${this.size}"></canvas>`;
+  }
+
+  private toRadians(deg: number): number {
+    return (Math.PI / 180) * deg;
+  }
+
+  private drawDial(color: string, bgcolor: string) {
+    const dialRadius = this.size / 2 - this.size / 50;
+    const dialBackRadius = this.size / 2 - this.size / 400;
+    this.ctx?.beginPath();
+    this.ctx?.arc(0, 0, dialBackRadius, 0, 360, false);
+    this.ctx!.fillStyle = bgcolor;
+    this.ctx?.fill();
+
+    for (let i = 1; i <= 60; i++) {
+      const ang = Math.PI / 30 * i;
+      const sang = Math.sin(ang);
+      const cang = Math.cos(ang);
+      let sx, sy, ex, ey;
+
+      if (i % 5 === 0) {
+        this.ctx!.lineWidth = this.size / 75;
+        sx = sang * (dialRadius - dialRadius / 10);
+        sy = cang * -(dialRadius - dialRadius / 10);
+        ex = sang * dialRadius;
+        ey = cang * -dialRadius;
+        const nx = sang * (dialRadius - dialRadius / 4.2);
+        const ny = cang * -(dialRadius - dialRadius / 4.2);
+
+        const marker = i / 5;
+        const textSize = this.size / 14;
+        this.ctx!.font = `100 ${textSize}px ${this.numeralFont}`;
+        this.ctx!.fillStyle = color;
+        const correctY = this.size <= 300 ? textSize / 3 : textSize / 8;
+        if (!this.hideNumerals && this.numerals.length > 0) {
+          (this.numerals as unknown as Array<Numeral>).forEach((numeral: any) => {
+            if (marker.toString() === Object.keys(numeral)[0]) {
+              const textWidth = this.ctx!.measureText(numeral[marker]).width;
+              this.ctx!.fillText(numeral[marker], nx - textWidth / 2, ny + correctY);
+            }
+          });
+        }
+      } else {
+        this.ctx!.lineWidth = this.size / 100;
+        sx = sang * (dialRadius - dialRadius / 20);
+        sy = cang * -(dialRadius - dialRadius / 20);
+        ex = sang * dialRadius;
+        ey = cang * -dialRadius;
+      }
+
+      this.ctx!.beginPath();
+      this.ctx!.strokeStyle = color;
+      this.ctx!.lineCap = 'round';
+      this.ctx!.moveTo(sx, sy);
+      this.ctx!.lineTo(ex, ey);
+      this.ctx!.stroke();
+    }
+
+    if (this.brandText) {
+      this.ctx!.font = `100 ${this.size / 28}px ${this.brandFont}`;
+      const brandtextWidth = this.ctx!.measureText(this.brandText).width;
+      this.ctx!.fillText(this.brandText, -(brandtextWidth / 2), this.size / 6);
+    }
+
+    if (this.brandText2) {
+      this.ctx!.textBaseline = 'middle';
+      this.ctx!.font = `100 ${this.size / 44}px ${this.brandFont}`;
+      const brandtextWidth2 = this.ctx!.measureText(this.brandText2).width;
+      this.ctx!.fillText(this.brandText2, -(brandtextWidth2 / 2), this.size / 5);
+    }
+  }
+
+  private drawHand(length: number) {
+    this.ctx!.beginPath();
+    this.ctx!.moveTo(0, 0);
+    this.ctx!.lineTo(0, -length);
+    this.ctx!.stroke();
+  }
+
+  private drawSecondHand(milliseconds: number, seconds: number, color: string) {
+    const shlength = this.radius - this.size / 40;
+    this.ctx!.save();
+    this.ctx!.lineWidth = this.size / 150;
+    this.ctx!.lineCap = 'round';
+    this.ctx!.strokeStyle = color;
+    const ms = this.sweepingSeconds ? milliseconds : 0;
+    this.ctx!.rotate(this.toRadians((ms * 0.006) + (seconds * 6)));
+    this.ctx!.shadowColor = 'rgba(0,0,0,.5)';
+    this.ctx!.shadowBlur = this.size / 80;
+    this.ctx!.shadowOffsetX = this.size / 200;
+    this.ctx!.shadowOffsetY = this.size / 200;
+    this.drawHand(shlength);
+
+    // Tail of second hand
+    this.ctx!.beginPath();
+    this.ctx!.moveTo(0, 0);
+    this.ctx!.lineTo(0, shlength / 15);
+    this.ctx!.lineWidth = this.size / 30;
+    this.ctx!.stroke();
+
+    // Round center
+    this.ctx!.beginPath();
+    this.ctx!.arc(0, 0, this.size / 30, 0, 360, false);
+    this.ctx!.fillStyle = color;
+    this.ctx!.fill();
+    this.ctx!.restore();
+  }
+
+  private drawMinuteHand(minutes: number, color: string) {
+    const mhlength = this.size / 2.2;
+    this.ctx!.save();
+    this.ctx!.lineWidth = this.size / 50;
+    this.ctx!.lineCap = 'round';
+    this.ctx!.strokeStyle = color;
+    if (this.tickingMinutes) {
+      minutes = Math.floor(minutes);
+    }
+    this.ctx!.rotate(this.toRadians(minutes * 6));
+    this.ctx!.shadowColor = 'rgba(0,0,0,.5)';
+    this.ctx!.shadowBlur = this.size / 50;
+    this.ctx!.shadowOffsetX = this.size / 250;
+    this.ctx!.shadowOffsetY = this.size / 250;
+    this.drawHand(mhlength);
+    this.ctx!.restore();
+  }
+
+  private drawHourHand(hours: number, color: string) {
+    const hhlength = this.size / 3;
+    this.ctx!.save();
+    this.ctx!.lineWidth = this.size / 25;
+    this.ctx!.lineCap = 'round';
+
+    this.ctx!.strokeStyle = color;
+    this.ctx!.rotate(this.toRadians(hours * 30));
+    this.ctx!.shadowColor = 'rgba(0,0,0,.5)';
+    this.ctx!.shadowBlur = this.size / 50;
+    this.ctx!.shadowOffsetX = this.size / 300;
+    this.ctx!.shadowOffsetY = this.size / 300;
+    this.drawHand(hhlength);
+    this.ctx!.restore();
+  }
+
+  private twelveBased(hour: number): number {
+    if (hour >= 12) {
+      hour -= 12;
+    }
+    return hour;
+  }
+
+  private timeToDecimal(time: Date): number {
+    const hours = this.twelveBased(time.getHours());
+    const minutes = time.getMinutes();
+    return hours + minutes / 60;
+  }
+
+  private drawAlarmHand(alarm: Date, color: string, tipcolor: string) {
+    const ahlength = this.size / 2.4;
+    const alarmDecimal = this.timeToDecimal(alarm);
+    this.ctx!.save();
+    this.ctx!.lineWidth = this.size / 30;
+    this.ctx!.lineCap = 'butt';
+    this.ctx!.strokeStyle = color;
+    this.ctx!.rotate(this.toRadians(alarmDecimal * 30));
+    this.ctx!.shadowColor = 'rgba(0,0,0,.5)';
+    this.ctx!.shadowBlur = this.size / 55;
+    this.ctx!.shadowOffsetX = this.size / 300;
+    this.ctx!.shadowOffsetY = this.size / 300;
+
+    // Main alarm hand
+    this.ctx!.beginPath();
+    this.ctx!.moveTo(0, 0);
+    this.ctx!.lineTo(0, -ahlength + this.size / 10);
+    this.ctx!.stroke();
+
+    // Tip of the alarm hand
+    this.ctx!.beginPath();
+    this.ctx!.strokeStyle = tipcolor;
+    this.ctx!.moveTo(0, -ahlength + this.size / 10);
+    this.ctx!.lineTo(0, -ahlength);
+    this.ctx!.stroke();
+
+    // Round center
+    this.ctx!.beginPath();
+    this.ctx!.arc(0, 0, this.size / 24, 0, 360, false);
+    this.ctx!.fillStyle = color;
+    this.ctx!.fill();
+    this.ctx!.restore();
+  }
+
+  private checkAlarmTime(newTime: string | Date): Date {
+    if (newTime instanceof Date) {
+      return newTime;
+    }
+    const timeParts = newTime.split(':').map(part => parseInt(part, 10));
+    const date = new Date();
+    date.setHours(timeParts[0] || 0, timeParts[1] || 0, timeParts[2] || 0);
+    return date;
+  }
+
+  setAlarm(newTime: string) {
+    this.alarmTime = this.checkAlarmTime(newTime).toString();
+  }
+
+  clearAlarm() {
+    this.alarmTime = undefined;
+    this.alarmTriggered = 0;
+    this.requestUpdate();
+    this.dispatchEvent(new CustomEvent('offAlarm'));
+  }
+
+  private last: any = 0;
+
+  private startClock() {
+    const updateClock = () => {
+      const now = new Date();
+      if (this.timeOffsetOperator === "+") {
+        now.setHours(now.getHours() + this.timeOffsetHours);
+        now.setMinutes(now.getMinutes() + this.timeOffsetMinutes);
+      } else {
+        now.setHours(now.getHours() - this.timeOffsetHours);
+        now.setMinutes(now.getMinutes() - this.timeOffsetMinutes);
+      }
+
+      const milliseconds = now.getMilliseconds();
+      const seconds = now.getSeconds();
+      const minutes = now.getMinutes() + seconds / 60;
+      const hours = this.twelveBased(now.getHours() + minutes / 60);
+
+      this.ctx!.clearRect(-this.radius, -this.radius, this.size, this.size);
+      this.drawDial(this.dialColor, this.dialBackgroundColor);
+
+      if (this.alarmTime) {
+        const alarmTime = new Date(this.checkAlarmTime(this.alarmTime));
+        this.drawAlarmHand(alarmTime, this.alarmHandColor, this.alarmHandTipColor);
+      }
+      this.drawHourHand(hours, this.hourHandColor);
+      this.drawMinuteHand(minutes, this.minuteHandColor);
+      this.drawSecondHand(milliseconds, seconds, this.secondHandColor);
+
+      if (!this.last || (now as any - this.last) >= 1000) {
+        this.last = now;
+        this.dispatchEvent(new CustomEvent('onEverySecond', { bubbles: true, composed: true, detail: { date: now, seconds: now.getSeconds() } }));
+      }
+
+      if (this.alarmTime) {
+        const alarmDate = new Date(this.checkAlarmTime(this.alarmTime));
+        const nowInSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+        const alarmInSeconds = alarmDate.getHours() * 3600 + alarmDate.getMinutes() * 60 + alarmDate.getSeconds();
+
+        if (nowInSeconds >= alarmInSeconds) {
+          this.alarmTriggered += 1;
+        }
+
+        if (this.alarmTriggered <= this.alarmCount && this.alarmTriggered !== 0) {
+          this.dispatchEvent(new CustomEvent('onAlarm', { bubbles: true, composed: true, detail: { date: now } }));
+        }
+      }
+
+      requestAnimationFrame(updateClock);
+    };
+
+    updateClock();
   }
 }
