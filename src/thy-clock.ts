@@ -15,11 +15,29 @@ export class ThyClock extends LitElement {
   @property({ type: String, attribute: 'dial-background-color' })
   dialBackgroundColor = '#FFFFFF';
 
+  @property({ type: String, attribute: 'second-hand-color' })
+  secondHandColor = '#F3A829';
+
+  @property({ type: String, attribute: 'minute-hand-color' })
+  minuteHandColor = '#222222';
+
+  @property({ type: String, attribute: 'hour-hand-color' })
+  hourHandColor = '#222222';
+
   @property({ type: Boolean, attribute: 'hide-numerals' })
   hideNumerals = false;
 
   @property({ type: String, attribute: 'numeral-font' })
   numeralFont = 'Arial';
+
+  @property({ type: String, attribute: 'brand-font' })
+  brandFont = 'Arial';
+
+  @property({ type: String, attribute: 'brand-text' })
+  brandText = "";
+
+  @property({ type: String, attribute: 'brand-text2' })
+  brandText2 = "";
 
   @property({ type: Array })
   numerals = [
@@ -37,16 +55,11 @@ export class ThyClock extends LitElement {
     { 12: 12 }
   ];
 
-
-  // @state()
-  // radius = !Number.isNaN(this.size) ? this.size / 2 : DEFAULT_SIZE / 2;
-
   private elCanvas: HTMLCanvasElement | null = null;
 
   constructor() {
     super();
     this.updateComplete.then(() => {
-      console.log("UPDATE COMPLETE");
       this.init();
     })
   }
@@ -66,7 +79,7 @@ export class ThyClock extends LitElement {
     if (this.elCanvas) {
       const ctx = this.elCanvas.getContext('2d');
       if (ctx) {
-        ctx.translate(this.size/2, this.size/2);
+        ctx.translate(this.size / 2, this.size / 2);
         this.drawDial(ctx);
       }
     }
@@ -79,9 +92,8 @@ export class ThyClock extends LitElement {
 
   private drawDial(ctx: CanvasRenderingContext2D) {
     if (ctx) {
-      console.log(this.size, this.size/2);
-      const dialRadius = this.size/2 - (this.size / 50);
-      const dialBackRadius = this.size/2 - (this.size / 400);
+      const dialRadius = this.size / 2 - (this.size / 50);
+      const dialBackRadius = this.size / 2 - (this.size / 400);
 
       let sx, sy, ex, ey;
 
@@ -113,9 +125,7 @@ export class ThyClock extends LitElement {
 
           if (!this.hideNumerals && this.numerals.length > 0) {
             this.numerals.map(function (numeral: any) {
-              // console.log(numeral);
               if (marker.toString() === Object.keys(numeral)[0]) {
-                console.log(numeral[marker]);
                 const textWidth = ctx.measureText(numeral[marker]).width;
                 ctx.fillText(numeral[marker], nx - (textWidth / 2), ny);
               }
@@ -137,6 +147,19 @@ export class ThyClock extends LitElement {
         ctx.lineTo(ex, ey);
         ctx.stroke();
       }
+
+      if (this.brandText) {
+        ctx.font = `100 ${this.size / 28}px ${this.brandFont}`;
+        const brandtextWidth = ctx.measureText(this.brandText).width;
+        ctx.fillText(this.brandText, -(brandtextWidth / 2), (this.size / 6));
+      }
+
+      if (this.brandText2) {
+        ctx.textBaseline = 'middle';
+        ctx.font = `100 ${this.size / 44}px ${this.brandFont}`;
+        const brandtextWidth2 = ctx.measureText(this.brandText2).width;
+        ctx.fillText(this.brandText2, -(brandtextWidth2 / 2), (this.size / 5));
+      }
     }
   }
 
@@ -149,7 +172,6 @@ export class ThyClock extends LitElement {
       width: auto;
       height: auto;
       aspect-ratio: 1 / 1;
-      border:1px solid red;
     }
     .cnvs {
       display: block;
