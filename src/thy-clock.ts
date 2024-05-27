@@ -1,11 +1,9 @@
 import { LitElement, html, css, PropertyValues } from 'lit';
 import { customElement, property } from "lit/decorators.js";
 
-
 interface Numeral {
   [key: number]: number | string;
 }
-
 
 @customElement('thy-clock')
 export class ThyClock extends LitElement {
@@ -16,7 +14,7 @@ export class ThyClock extends LitElement {
   @property({ type: String, attribute: "minute-hand-color", reflect: true }) minuteHandColor = '#222222';
   @property({ type: String, attribute: "hour-hand-color", reflect: true }) hourHandColor = '#222222';
   @property({ type: String, attribute: "alarm-hand-color", reflect: true }) alarmHandColor = '#FFFFFF';
-  @property({ type: String, attribute: "hour-hand-tip-color", reflect: true }) alarmHandTipColor = '#026729';
+  @property({ type: String, attribute: "alarm-hand-tip-color", reflect: true }) alarmHandTipColor = '#026729';
   @property({ type: Boolean, attribute: "hide-numerals", reflect: true }) hideNumerals = false;
   @property({ type: String, attribute: "numeral-font", reflect: true }) numeralFont = 'arial';
   @property({ type: String, attribute: "brand-font", reflect: true }) brandFont = 'arial';
@@ -26,14 +24,9 @@ export class ThyClock extends LitElement {
   @property({ type: Boolean, attribute: "sweeping-seconds", reflect: true }) sweepingSeconds = false;
   @property({ type: String }) numerals = JSON.stringify([{ 1: 1 }, { 2: 2 }, { 3: 3 }, { 4: 4 }, { 5: 5 }, { 6: 6 }, { 7: 7 }, { 8: 8 }, { 9: 9 }, { 10: 10 }, { 11: 11 }, { 12: 12 }]);
   @property({ type: String, attribute: "alarm-time", reflect: true }) alarmTime?: string;
-  @property({ type: Number, attribute: "alarm-repeat", reflect: true }) alarmRepeat = 1;
   @property({ type: String, attribute: "time-offset-operator", reflect: true }) timeOffsetOperator = "+";
   @property({ type: Number, attribute: "time-offset-hours", reflect: true }) timeOffsetHours = 0;
   @property({ type: Number, attribute: "time-offset-minutes", reflect: true }) timeOffsetMinutes = 0;
-
-  // @property({ type: Function }) onAlarm?: () => void;
-  // @property({ type: Function }) offAlarm?: () => void;
-  // @property({ type: Function }) onEverySecond?: () => void;
 
   private canvas?: HTMLCanvasElement;
   private ctx?: CanvasRenderingContext2D;
@@ -55,7 +48,6 @@ export class ThyClock extends LitElement {
     this.radius = this.size / 2;
     this.ctx.translate(this.radius, this.radius);
     this.startClock();
-
   }
 
   updated(changedProperties: PropertyValues) {
@@ -269,28 +261,20 @@ export class ThyClock extends LitElement {
     return date;
   }
 
-  setAlarm(newTime: string) {
-    this.alarmTime = this.checkAlarmTime(newTime).toString();
-  }
-
-  clearAlarm() {
-    this.alarmTime = undefined;
-    this.alarmTriggered = 0;
-    this.requestUpdate();
-    this.dispatchEvent(new CustomEvent('offAlarm'));
-  }
-
   private last: any = 0;
 
   private startClock() {
+    this.timeOffsetHours = isNaN(this.timeOffsetHours) ? 0 : this.timeOffsetHours;
+    this.timeOffsetMinutes = isNaN(this.timeOffsetMinutes) ? 0 : this.timeOffsetMinutes;
+    
     const updateClock = () => {
       const now = new Date();
-      if (this.timeOffsetOperator === "+") {
-        now.setHours(now.getHours() + this.timeOffsetHours);
-        now.setMinutes(now.getMinutes() + this.timeOffsetMinutes);
-      } else {
+      if (this.timeOffsetOperator !== "+") {
         now.setHours(now.getHours() - this.timeOffsetHours);
         now.setMinutes(now.getMinutes() - this.timeOffsetMinutes);
+      } else {
+        now.setHours(now.getHours() + this.timeOffsetHours);
+        now.setMinutes(now.getMinutes() + this.timeOffsetMinutes);
       }
 
       const milliseconds = now.getMilliseconds();
@@ -309,6 +293,7 @@ export class ThyClock extends LitElement {
       this.drawMinuteHand(minutes, this.minuteHandColor);
       this.drawSecondHand(milliseconds, seconds, this.secondHandColor);
 
+      // EVERY SECOND
       if (!this.last || (now as any - this.last) >= 1000) {
         this.last = now;
         this.dispatchEvent(new CustomEvent('onEverySecond', { bubbles: true, composed: true, detail: { date: now, seconds: now.getSeconds() } }));
@@ -318,12 +303,10 @@ export class ThyClock extends LitElement {
         const alarmDate = new Date(this.checkAlarmTime(this.alarmTime));
         const nowInSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
         const alarmInSeconds = alarmDate.getHours() * 3600 + alarmDate.getMinutes() * 60 + alarmDate.getSeconds();
-
         if (nowInSeconds >= alarmInSeconds) {
           this.alarmTriggered += 1;
         }
-
-        if (this.alarmTriggered <= this.alarmRepeat && this.alarmTriggered !== 0) {
+        if (this.alarmTriggered <= 1 && this.alarmTriggered !== 0) {
           this.dispatchEvent(new CustomEvent('onAlarm', { bubbles: true, composed: true, detail: { date: now } }));
         }
       }
