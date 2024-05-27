@@ -1,0 +1,36 @@
+{
+  "name": "thy-clock",
+  "private": false,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lit": "^3.1.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0",
+    "vite-plugin-dts": "^3.9.1"
+  },
+  "license": "MIT",
+  "keywords": [
+    "webcomponent",
+    "component",
+    "analogue clock",
+    "clock",
+    "thooClock successor",
+    "typescript",
+    "javascript",
+    "vue",
+    "react",
+    "vanilla",
+    "svelte",
+    "angular",
+    "lit",
+    "vite"
+  ]
+}
