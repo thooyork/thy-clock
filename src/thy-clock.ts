@@ -69,33 +69,37 @@ export class ThyClock extends LitElement {
   }
 
   private drawDial(color: string, bgcolor: string) {
+    
     const dialRadius = this.size / 2 - this.size / 50;
     const dialBackRadius = this.size / 2 - this.size / 400;
-    this.ctx?.beginPath();
-    this.ctx?.arc(0, 0, dialBackRadius, 0, 360, false);
+    this.ctx!.beginPath();
+    this.ctx!.arc(0, 0, dialBackRadius, 0, 360, false);
     this.ctx!.fillStyle = bgcolor;
-    this.ctx?.fill();
+    this.ctx!.fill();
 
     for (let i = 1; i <= 60; i++) {
+      
       const ang = Math.PI / 30 * i;
       const sang = Math.sin(ang);
       const cang = Math.cos(ang);
-      let sx, sy, ex, ey;
+      let sx=0, sy=0, ex=0, ey=0, nx=0, ny=0;
 
       if (i % 5 === 0) {
-        this.ctx!.lineWidth = this.size / 75;
-        sx = sang * (dialRadius - dialRadius / 10);
-        sy = cang * -(dialRadius - dialRadius / 10);
-        ex = sang * dialRadius;
-        ey = cang * -dialRadius;
-        const nx = sang * (dialRadius - dialRadius / 4.2);
-        const ny = cang * -(dialRadius - dialRadius / 4.2);
+        this.ctx!.lineWidth = Math.floor(this.size / 75);
+        sx = sang * Math.floor((dialRadius - dialRadius / 10));
+        sy = cang * Math.floor(-(dialRadius - dialRadius / 10));
+        ex = sang * Math.floor(dialRadius);
+        ey = cang * Math.floor(-dialRadius);
+        nx = sang * Math.floor((dialRadius - dialRadius / 4.2));
+        ny = cang * Math.floor(-(dialRadius - dialRadius / 4.2));
 
-        const marker = i / 5;
+        const marker = Math.floor(i / 5);
         const textSize = this.size / 14;
         this.ctx!.font = `100 ${textSize}px ${this.numeralFont}`;
         this.ctx!.fillStyle = color;
-        const correctY = this.size <= 300 ? textSize / 3 : textSize / 8;
+
+        const correctY = textSize/3;
+
         if (!this.hideNumerals && this.numerals.length > 0) {
           (this.numerals as unknown as Array<Numeral>).forEach((numeral: any) => {
             if (marker.toString() === Object.keys(numeral)[0]) {

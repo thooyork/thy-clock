@@ -14,69 +14,40 @@
 
   <div style="display: flex; flex-direction: row; justify-content: space-around; align-items: center; height: 100vh">
 
-    <thy-clock size="75"></thy-clock>
-    <thy-clock size="100"></thy-clock>
-    <!-- <thy-clock size="125"></thy-clock>
-    <thy-clock size="150"></thy-clock>
-    <thy-clock size="175"></thy-clock>
-    <thy-clock size="200"></thy-clock>
-    <thy-clock size="225"></thy-clock>
-    <thy-clock size="250"></thy-clock> -->
+    <thy-clock size="400"></thy-clock>
+    
     <thy-clock 
-    id="alarmclock"
-    size="400" 
-    sweeping-seconds
-    dial-color="red"
-    dial-background-color="purple"
-    second-hand-color="#0ca2e8"
-    minute-hand-color="#e8a60c"
-    hour-hand-color="#0ce838"
-    alarm-time="18:30"
-    alarm-hand-color="#0000aa"
-    alarm-hand-tip-color="#aa0000"
-    numeral-font="Times"
-    brand-font="Bradley Hand"
-    brand-text="THY-CLOCK"
-    brand-text2="Germany"
-    numerals='[{"3":"III"},{"6":"VI"},{"9":"IX"},{"12":"XII"}]'
-    time-offset-operator="-"
-    time-offset-hours="2"
-    time-offset-minutes="30"
+      size="400" 
+      sweeping-seconds 
+      dial-color="#e8a60c" 
+      dial-background-color="purple"
+      second-hand-color="#0ca2e8" 
+      minute-hand-color="#dd0000" 
+      hour-hand-color="#0ce838" 
+      alarm-time="18:30"
+      alarm-hand-color="#0000aa" 
+      alarm-hand-tip-color="#aa0000" 
+      numeral-font="Times" 
+      brand-font="monospace"
+      brand-text="THY-CLOCK" 
+      brand-text2="Germany" 
+      numerals='[{"3":"III"},{"6":"VI"},{"9":"IX"},{"12":"XII"}]'
+      time-offset-operator="-" 
+      time-offset-hours="2" 
+      time-offset-minutes="30"
     ></thy-clock>
-    <thy-clock size="300"></thy-clock>
-    <!-- <thy-clock size="325" time-offset-operator="+" time-offset-hours="1" time-offset-minutes="15"></thy-clock> -->
-
-    <!-- <thy-clock size="150" minute-hand-color="#00cc00" hour-hand-color="#cc0000" second-hand-color="#0000cc" dial-background-color="#888888" dial-color="#ffdf09"></thy-clock>
-    <thy-clock size="75" sweeping-seconds></thy-clock>
-
-
-    <thy-clock size="500" dial-background-color="transparent" brand-text="THY-CLOCK" brand-text2="Germany" sweeping-seconds></thy-clock>
-
-    <thy-clock numeral-font="Times New Roman" numerals="[{&quot;3&quot;:&quot;III&quot;},{&quot;6&quot;:&quot;VI&quot;},{&quot;9&quot;:&quot;IX&quot;},{&quot;12&quot;:&quot;XII&quot;}]"></thy-clock>
- 
-    <thy-clock numeral-font="Times New Roman" numerals="[
-    {&quot;2&quot;:&quot;2&quot;},
-    {&quot;4&quot;:&quot;4&quot;},
-    {&quot;6&quot;:&quot;6&quot;},
-    {&quot;8&quot;:&quot;8&quot;},
-    {&quot;10&quot;:&quot;10&quot;},
-    {&quot;12&quot;:&quot;12&quot;}
-    ]"></thy-clock>
-
-    <thy-clock alarm-time="17:40" id="alarmclock"></thy-clock>
-
-    <thy-clock time-offset-operator="-" time-offset-hours="2" time-offset-minutes="10"></thy-clock> -->
+    
   </div>
 
   <script>
     const alarmClock = document.getElementById('alarmclock');
-    alarmClock.addEventListener('onAlarm', (e) => {
-     console.log('Alarm is ringing', e.detail.date);
-    });
+    //alarmClock.addEventListener('onAlarm', (e) => {
+    //  console.log('Alarm is ringing', e.detail.date);
+    //});
 
-    alarmClock.addEventListener('onEverySecond', (e) => {
+    //alarmClock.addEventListener('onEverySecond', (e) => {
     //  console.log('Every second', e.detail.seconds, e.detail.date);
-    });
+    //});
   </script>
 </body>
 
