@@ -131,7 +131,6 @@ export class ThyClock extends LitElement {
     }
 
     if (this.brandText2) {
-      this.ctx!.textBaseline = 'middle';
       this.ctx!.font = `100 ${this.size / 44}px ${this.brandFont}`;
       const brandtextWidth2 = this.ctx!.measureText(this.brandText2).width;
       this.ctx!.fillText(this.brandText2, -(brandtextWidth2 / 2), this.size / 5);
