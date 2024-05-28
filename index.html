@@ -13,30 +13,25 @@
 <body>
 
   <div style="display: flex; flex-direction: row; justify-content: space-around; align-items: center; height: 100vh">
+    <div class="clockContainer">
+      <thy-clock size="400" alarm-time="13:30"></thy-clock>
+      <div>DEFAULT SETTINGS, ALARM 13:30</div>
+    </div>
 
-    <thy-clock size="400"></thy-clock>
-    
-    <thy-clock 
-      size="400" 
-      sweeping-seconds 
-      dial-color="#e8a60c" 
-      dial-background-color="purple"
-      second-hand-color="#0ca2e8" 
-      minute-hand-color="#dd0000" 
-      hour-hand-color="#0ce838" 
-      alarm-time="18:30"
-      alarm-hand-color="#0000aa" 
-      alarm-hand-tip-color="#aa0000" 
-      numeral-font="Times" 
-      brand-font="monospace"
-      brand-text="THY-CLOCK" 
-      brand-text2="Germany" 
-      numerals='[{"3":"III"},{"6":"VI"},{"9":"IX"},{"12":"XII"}]'
-      time-offset-operator="-" 
-      time-offset-hours="2" 
-      time-offset-minutes="30"
-    ></thy-clock>
-    
+    <div class="clockContainer">
+      <thy-clock size="400" dial-color="#121212" dial-background-color="transparent" second-hand-color="#cc0000"></thy-clock>
+      <div>TRANSPARENT BACKGROUND, NO ALARM</div>
+    </div>
+
+    <div class="clockContainer">
+      <thy-clock size="400" sweeping-seconds dial-color="#fac2ff" dial-background-color="#8634eb"
+        second-hand-color="#0ca2e8" minute-hand-color="#dd0000" hour-hand-color="#0ce838" alarm-time="13:30"
+        alarm-hand-color="#0000aa" alarm-hand-tip-color="#aa0000" numeral-font="Times" brand-font="monospace"
+        brand-text="THY-CLOCK" brand-text2="Germany" numerals='[{"3":"III"},{"6":"VI"},{"9":"IX"},{"12":"XII"}]'
+        time-offset-operator="-" time-offset-hours="2" time-offset-minutes="30"></thy-clock>
+      <div>CUSTOM SETTINGS & TIME OFFSET</div>
+    </div>
+
   </div>
 
   <script>

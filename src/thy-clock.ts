@@ -69,7 +69,7 @@ export class ThyClock extends LitElement {
   }
 
   private drawDial(color: string, bgcolor: string) {
-    
+
     const dialRadius = this.size / 2 - this.size / 50;
     const dialBackRadius = this.size / 2 - this.size / 400;
     this.ctx!.beginPath();
@@ -78,11 +78,11 @@ export class ThyClock extends LitElement {
     this.ctx!.fill();
 
     for (let i = 1; i <= 60; i++) {
-      
+
       const ang = Math.PI / 30 * i;
       const sang = Math.sin(ang);
       const cang = Math.cos(ang);
-      let sx=0, sy=0, ex=0, ey=0, nx=0, ny=0;
+      let sx = 0, sy = 0, ex = 0, ey = 0, nx = 0, ny = 0;
 
       if (i % 5 === 0) {
         this.ctx!.lineWidth = Math.floor(this.size / 75);
@@ -98,13 +98,11 @@ export class ThyClock extends LitElement {
         this.ctx!.font = `100 ${textSize}px ${this.numeralFont}`;
         this.ctx!.fillStyle = color;
 
-        const correctY = textSize/3;
-
         if (!this.hideNumerals && this.numerals.length > 0) {
           (this.numerals as unknown as Array<Numeral>).forEach((numeral: any) => {
             if (marker.toString() === Object.keys(numeral)[0]) {
               const textWidth = this.ctx!.measureText(numeral[marker]).width;
-              this.ctx!.fillText(numeral[marker], nx - textWidth / 2, ny + correctY);
+              this.ctx!.fillText(numeral[marker], nx - textWidth / 2, ny + (textSize / 3));
             }
           });
         }
@@ -269,7 +267,7 @@ export class ThyClock extends LitElement {
   private startClock() {
     this.timeOffsetHours = isNaN(this.timeOffsetHours) ? 0 : this.timeOffsetHours;
     this.timeOffsetMinutes = isNaN(this.timeOffsetMinutes) ? 0 : this.timeOffsetMinutes;
-    
+
     const updateClock = () => {
       const now = new Date();
       if (this.timeOffsetOperator !== "+") {
