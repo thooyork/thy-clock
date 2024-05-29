@@ -22,7 +22,7 @@ export class ThyClock extends LitElement {
   @property({ type: String, attribute: "brand-text2", reflect: true }) brandText2?: string;
   @property({ type: Boolean, attribute: "ticking-minutes", reflect: true }) tickingMinutes = false;
   @property({ type: Boolean, attribute: "sweeping-seconds", reflect: true }) sweepingSeconds = false;
-  @property({ type: String }) numerals = JSON.stringify([{ 1: 1 }, { 2: 2 }, { 3: 3 }, { 4: 4 }, { 5: 5 }, { 6: 6 }, { 7: 7 }, { 8: 8 }, { 9: 9 }, { 10: 10 }, { 11: 11 }, { 12: 12 }]);
+  @property({ type: Object }) numerals: Numeral = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12 };
   @property({ type: String, attribute: "alarm-time", reflect: true }) alarmTime?: string;
   @property({ type: String, attribute: "time-offset-operator", reflect: true }) timeOffsetOperator = "+";
   @property({ type: Number, attribute: "time-offset-hours", reflect: true }) timeOffsetHours = 0;
@@ -60,7 +60,6 @@ export class ThyClock extends LitElement {
   }
 
   render() {
-    this.numerals = this.numerals ? JSON.parse(this.numerals) : [];
     return html`<canvas width="${this.size}" height="${this.size}"></canvas>`;
   }
 
@@ -98,11 +97,11 @@ export class ThyClock extends LitElement {
         this.ctx!.font = `100 ${textSize}px ${this.numeralFont}`;
         this.ctx!.fillStyle = color;
 
-        if (!this.hideNumerals && this.numerals.length > 0) {
-          (this.numerals as unknown as Array<Numeral>).forEach((numeral: any) => {
-            if (marker.toString() === Object.keys(numeral)[0]) {
-              const textWidth = this.ctx!.measureText(numeral[marker]).width;
-              this.ctx!.fillText(numeral[marker], nx - textWidth / 2, ny + (textSize / 3));
+        if (!this.hideNumerals) {
+          Object.entries(this.numerals).forEach(([key, value]) => {
+            if (marker.toString() === key) {
+              const textWidth = this.ctx!.measureText(value.toString()).width;
+              this.ctx!.fillText(value.toString(), nx - textWidth / 2, ny + (textSize / 3));
             }
           });
         }

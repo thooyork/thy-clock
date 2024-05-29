@@ -100,17 +100,26 @@ The following attributes are available:
 | ``` hide-numerals ``` | ``` boolean ``` | ``` false ```| hides the numerals if present |
 | ``` numeral-font ``` | ``` string ``` | ``` arial ```| font type for the numerals |
 | ``` brand-font ``` | ``` string ``` | ``` arial ```| font type for the brand-text & brand-text2 |
-| ``` brand-text ``` | ``` string\|null ``` | ``` null ```| text on dial |
-| ``` brand-text2 ``` | ``` string\|null ``` | ``` null ```| text line 2 (small) on dial |
+| ``` brand-text ``` | ``` string or null ``` | ``` null ```| text on dial |
+| ``` brand-text2 ``` | ``` string or null ``` | ``` null ```| text line 2 (small) on dial |
 | ``` ticking-minutes ``` | ``` boolean ``` | ``` false ```| sets the minute hand only at the full minute (default is sweeping)  |
 | ``` sweeping-seconds ``` | ``` boolean ``` | ``` false ```| lets the second hand slide (default is ticking)  |
-| ``` numerals ``` | ``` stringified JSON Array ``` | ``` [{ 1: 1 }, { 2: 2 }, { 3: 3 }, { 4: 4 }, { 5: 5 }, { 6: 6 }, { 7: 7 }, { 8: 8 }, { 9: 9 }, { 10: 10 }, { 11: 11 }, { 12: 12 }] ```| gives you the possibility to set only specific numerals, or change their values(e.g. roman figures)  |
-| ``` alarm-time ``` | ``` string\|null ``` | ``` null ```| String of hours and minutes with colon-separator like "12:45" |
+| ``` numerals ``` | ``` Object<Numeral> ```*  | ``` { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12 } ```|  gives you the possibility to set only specific numerals, or change their values(e.g. roman figures)  |
+| ``` alarm-time ``` | ``` string or null ``` | ``` null ```| String of hours and minutes with colon-separator like "12:45" |
 | ``` time-offset-operator ``` | ``` string ``` | ``` + ```| "+" or "-" to add or subtract the offset |
 | ``` time-offset-hours ``` | ``` number ``` | ``` 0 ```| offset in hours |
 | ``` time-offset-minutes ``` | ``` number ``` | ``` 0 ```| offset in minutes |
 
+#### * Interface Numeral:
+```javascript
+interface Numeral {
+  [key: number]: number | string;
+}
+```
+
 ## Demo (or it didn't happen)
 [VISIT DEMO SITE](https://smart-sign.com/npm/thy-clock/)
 
-## ✨ Have fun! ✨ and remember: time flies ! 🕛 🕐 🕑 🕒 🕓 🕔 🕕
+## ✨ Have fun! ✨
+Remember: time flies !
+🕛 🕐 🕑 🕒 🕓 🕔 🕕
