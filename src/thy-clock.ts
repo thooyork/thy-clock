@@ -308,9 +308,13 @@ export class ThyClock extends LitElement {
       this.drawSecondHand(milliseconds, seconds, this.secondHandColor);
 
       // EVERY SECOND
-      if (!this.last || (now as any - this.last) >= 1000) {
+      if (!this.last || Math.floor(now.getTime() / 1000) != Math.floor(this.last.getTime() / 1000)) {
         this.last = now;
-        this.dispatchEvent(new CustomEvent('onEverySecond', { bubbles: true, composed: true, detail: { date: now, seconds: now.getSeconds() } }));
+        this.dispatchEvent(new CustomEvent('every-second', {
+          bubbles: true,
+          composed: true,
+          detail: { date: now, seconds: now.getSeconds() }
+        }));
       }
 
       if (this.alarmTime) {
@@ -321,7 +325,7 @@ export class ThyClock extends LitElement {
           this.alarmTriggered += 1;
         }
         if (this.alarmTriggered <= 1 && this.alarmTriggered !== 0) {
-          this.dispatchEvent(new CustomEvent('onAlarm', { bubbles: true, composed: true, detail: { date: now } }));
+          this.dispatchEvent(new CustomEvent('alarm', { bubbles: true, composed: true, detail: { date: now } }));
         }
       }
 
