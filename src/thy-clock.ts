@@ -1,8 +1,11 @@
-import { LitElement, html, css, PropertyValues } from 'lit';
-import { customElement, property } from "lit/decorators.js";
+import { css, html, LitElement, PropertyValues } from "lit"
+import { customElement, property } from "lit/decorators.js"
+import { AnimationFunction } from "./animation-function.ts"
 
-interface Numeral {
-  [key: number]: number | string;
+type HandAnimation = "tick" | "smooth-tick" | "sweep"
+
+type Numeral =  {
+  [key in 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12]: number | string;
 }
 
 @customElement('thy-clock')
@@ -21,12 +24,13 @@ export class ThyClock extends LitElement {
   @property({ type: String, attribute: "brand-text", reflect: true }) brandText?: string;
   @property({ type: String, attribute: "brand-text2", reflect: true }) brandText2?: string;
   @property({ type: Boolean, attribute: "ticking-minutes", reflect: true }) tickingMinutes = false;
-  @property({ type: Boolean, attribute: "sweeping-seconds", reflect: true }) sweepingSeconds = false;
+  @property({ attribute: "second-hand-animation" }) secondHandAnimation: HandAnimation = "smooth-tick"
+  @property({ attribute: "second-hand-pause" }) secondHandPause: number = 0
   @property({ type: Object }) numerals: Numeral = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12 };
   @property({ type: String, attribute: "alarm-time", reflect: true }) alarmTime?: string;
-  @property({ type: String, attribute: "time-offset-operator", reflect: true }) timeOffsetOperator = "+";
-  @property({ type: Number, attribute: "time-offset-hours", reflect: true }) timeOffsetHours = 0;
-  @property({ type: Number, attribute: "time-offset-minutes", reflect: true }) timeOffsetMinutes = 0;
+  @property({ type: String, attribute: "time-offset-operator", reflect: true }) timeOffsetOperator: "+" | "-" = "+"
+  @property({ type: Number, attribute: "time-offset-hours", reflect: true }) timeOffsetHours?: number
+  @property({ type: Number, attribute: "time-offset-minutes", reflect: true }) timeOffsetMinutes?: number
 
   private canvas?: HTMLCanvasElement;
   private ctx?: CanvasRenderingContext2D;
@@ -147,8 +151,9 @@ export class ThyClock extends LitElement {
     this.ctx!.lineWidth = this.size / 150;
     this.ctx!.lineCap = 'round';
     this.ctx!.strokeStyle = color;
-    const ms = this.sweepingSeconds ? milliseconds : 0;
-    this.ctx!.rotate(this.toRadians((ms * 0.006) + (seconds * 6)));
+    const pauseFunction = AnimationFunction.pauseAtEnd(60, this.secondHandPause)
+    const secondsAnimationFunction = this.chooseAnimationFunction(this.secondHandAnimation)
+    this.ctx!.rotate(this.toRadians(6 * secondsAnimationFunction(pauseFunction(seconds + milliseconds * .001))))
     this.ctx!.shadowColor = 'rgba(0,0,0,.5)';
     this.ctx!.shadowBlur = this.size / 80;
     this.ctx!.shadowOffsetX = this.size / 200;
@@ -168,6 +173,14 @@ export class ThyClock extends LitElement {
     this.ctx!.fillStyle = color;
     this.ctx!.fill();
     this.ctx!.restore();
+  }
+
+  private chooseAnimationFunction(animation: HandAnimation): (x: number) => number {
+    switch (animation) {
+      case "sweep": return (x: number) => x
+      case "tick": return AnimationFunction.hardTick
+    }
+    return AnimationFunction.softTick // fallback (this is outside the switch in case an unknown string is passed as argument)
   }
 
   private drawMinuteHand(minutes: number, color: string) {
@@ -261,21 +274,22 @@ export class ThyClock extends LitElement {
     return date;
   }
 
-  private last: any = 0;
+  private last: Date | undefined;
+
+  private applyOffset(time: Date): Date {
+    const offsetFactor = this.timeOffsetOperator === "-" ? -1 : 1;
+    time.setHours(time.getHours() + offsetFactor * (
+      !this.timeOffsetHours || isNaN(this.timeOffsetHours) ? 0 : this.timeOffsetHours
+    ));
+    time.setMinutes(time.getMinutes() + offsetFactor * (
+      !this.timeOffsetMinutes || isNaN(this.timeOffsetMinutes) ? 0 : this.timeOffsetMinutes
+    ));
+    return time
+  }
 
   private startClock() {
-    this.timeOffsetHours = isNaN(this.timeOffsetHours) ? 0 : this.timeOffsetHours;
-    this.timeOffsetMinutes = isNaN(this.timeOffsetMinutes) ? 0 : this.timeOffsetMinutes;
-
     const updateClock = () => {
-      const now = new Date();
-      if (this.timeOffsetOperator !== "+") {
-        now.setHours(now.getHours() - this.timeOffsetHours);
-        now.setMinutes(now.getMinutes() - this.timeOffsetMinutes);
-      } else {
-        now.setHours(now.getHours() + this.timeOffsetHours);
-        now.setMinutes(now.getMinutes() + this.timeOffsetMinutes);
-      }
+      const now = this.applyOffset(new Date());
 
       const milliseconds = now.getMilliseconds();
       const seconds = now.getSeconds();
