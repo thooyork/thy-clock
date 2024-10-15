@@ -11,7 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
-thy-clock.d.ts
+*.d.ts
+
 
 # Editor directories and files
 .vscode/*
