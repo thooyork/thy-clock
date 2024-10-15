@@ -26,7 +26,7 @@ This is a stylish analogoue alarm-clock ⏰ web component, that can easily be in
     // fully customized
     <thy-clock 
       size="400"
-      sweeping-seconds
+      second-hand-animation="sweep"
       dial-color="#fac2ff"
       dial-background-color="#8634eb"
       second-hand-color="#0ca2e8"
@@ -103,7 +103,7 @@ The following attributes are available:
 | ``` brand-text ``` | ``` string or null ``` | ``` null ```| text on dial |
 | ``` brand-text2 ``` | ``` string or null ``` | ``` null ```| text line 2 (small) on dial |
 | ``` ticking-minutes ``` | ``` boolean ``` | ``` false ```| sets the minute hand only at the full minute (default is sweeping)  |
-| ``` sweeping-seconds ``` | ``` boolean ``` | ``` false ```| lets the second hand slide (default is ticking)  |
+| ``` second-hand-animation ``` | ``` HandAnimation ``` | ``` "tick" | "smooth-tick" | "sweep" ```| sets the second hand animation (default is smooth-tick)  |
 | ``` numerals ``` | ``` Object<Numeral> ```*  | ``` { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12 } ```|  gives you the possibility to set only specific numerals, or change their values(e.g. roman figures)  |
 | ``` alarm-time ``` | ``` string or null ``` | ``` null ```| String of hours and minutes with colon-separator like "12:45" |
 | ``` time-offset-operator ``` | ``` string ``` | ``` + ```| "+" or "-" to add or subtract the offset |

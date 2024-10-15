@@ -1,7 +1,7 @@
 {
   "name": "thy-clock",
   "private": false,
-  "version": "0.1.2",
+  "version": "1.0.0",
   "type": "module",
   "main": "dist/thy-clock.js",
   "types": "dist/thy-clock.d.ts",

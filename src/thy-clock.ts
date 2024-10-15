@@ -25,7 +25,7 @@ export class ThyClock extends LitElement {
   @property({ type: String, attribute: "brand-text2", reflect: true }) brandText2?: string;
   @property({ type: Boolean, attribute: "ticking-minutes", reflect: true }) tickingMinutes = false;
   @property({ attribute: "second-hand-animation" }) secondHandAnimation: HandAnimation = "smooth-tick"
-  @property({ attribute: "second-hand-pause" }) secondHandPause: number = 0
+  @property({ attribute: "second-hand-pause" }) secondHandPause: number = 0;
   @property({ type: Object }) numerals: Numeral = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12 };
   @property({ type: String, attribute: "alarm-time", reflect: true }) alarmTime?: string;
   @property({ type: String, attribute: "time-offset-operator", reflect: true }) timeOffsetOperator: "+" | "-" = "+"
