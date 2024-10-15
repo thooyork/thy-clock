@@ -14,7 +14,7 @@
 
   <div style="display: flex; flex-direction: row; justify-content: space-around; align-items: center; height: 100vh">
     <div class="clockContainer">
-      <thy-clock size="400" alarm-time="13:30"></thy-clock>
+      <thy-clock size="400" alarm-time="13:30" id="alarmclock"></thy-clock>
       <div style="text-align: center">DEFAULT SETTINGS, ALARM 13:30<br>smooth-ticking second hand</div>
     </div>
 
@@ -36,14 +36,14 @@
   </div>
 
   <script>
-    const alarmClock = document.getElementById('alarmclock');
-    //alarmClock.addEventListener('onAlarm', (e) => {
+    // const alarmClock = document.getElementById('alarmclock');
+    // alarmClock.addEventListener('alarm', (e) => {
     //  console.log('Alarm is ringing', e.detail.date);
-    //});
+    // });
 
-    //alarmClock.addEventListener('onEverySecond', (e) => {
+    // alarmClock.addEventListener('every-second', (e) => {
     //  console.log('Every second', e.detail.seconds, e.detail.date);
-    //});
+    // });
   </script>
 </body>
 

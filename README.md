@@ -53,11 +53,11 @@ Listen to events:
 <script>
     const alarmClock = document.getElementById("alarmclock");
     
-    alarmClock.addEventListener('onAlarm', (e) => {
+    alarmClock.addEventListener('alarm', (e) => {
         console.log('Alarm is ringing', e.detail.date);
     });
     
-    alarmClock.addEventListener('onEverySecond', (e) => {
+    alarmClock.addEventListener('every-second', (e) => {
       console.log('Every second', e.detail.seconds, e.detail.date);
     });
 </script>
